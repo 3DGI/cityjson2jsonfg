@@ -1,0 +1,25 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "cityjson2jsonfg"
+version = "0.1"
+description = "Convert CityJSON files to JSON-FG format"
+readme = "README.md"
+requires-python = ">=3.8"
+license = { text = "Apache-2.0 License" }
+authors = [
+    { name = "Balázs Dukai", email = "balazs.dukai@3dgi.nl" },
+    { name = "3DGI", email = "info@3dgi.nl" }
+]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Topic :: Scientific/Engineering :: GIS",
+    "License :: OSI Approved :: Apache Software License"
+]
+urls = { github = "https://github.com/3DGI/cityjson2jsonfg" }
+dependencies = [
+    "cjio>=0.7.4",
+]
+optional-dependencies = { develop = ["pytest", "tox"] }

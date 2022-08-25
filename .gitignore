@@ -1,0 +1,4 @@
+.idea
+.run
+.tox
+*.egg-info
