@@ -19,7 +19,8 @@ pip install cityjson2jsonfg
 
 ## Usage
 
-Convert a single CityJSON file to JSON-FG
+Convert a single CityJSON file to JSON-FG.
+Only CityJSON v1.1 (or higher) files are supported.
 
 ```shell
 cityjson2jsonfg <input.city.json> <output.jsonfg>

@@ -13,18 +13,37 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 """
+import warnings
 import click
+from cjio import cityjson, errors
+from cjio.cjio import _print_cmd
+
+cityjson.CITYJSON_VERSIONS_SUPPORTED = ['1.1',]
+
 
 
 @click.command()
 @click.version_option()
-@click.argument("input", type=click.File("r"))
-@click.argument("output", type=click.File("w"))
-def main():
+@click.argument("infile", type=click.File("r"))
+@click.argument("outfile", type=click.File("w"))
+@click.option('--ignore_duplicate_keys', is_flag=True, help='Load a CityJSON file even if some City Objects have the same IDs (technically invalid file).')
+def main(infile, outfile, ignore_duplicate_keys):
     """A command line tool for converting CityJSON files to JSON-FG format.
 
-        INPUT – Path to a CityJSON file\n
-        OUTPUT – Path to the JSON-FG file to write
+        INFILE – Path to a CityJSON file\n
+        OUTFILE – Path to the JSON-FG file to write
     """
-    print("Hello world")
+    click.echo("Parsing %s" % infile.name)
+    try:
+        cm = cityjson.reader(file=infile, ignore_duplicate_keys=ignore_duplicate_keys)
+        try:
+            with warnings.catch_warnings(record=True) as w:
+                cm.check_version()
+                _print_cmd(w)
+        except errors.CJInvalidVersion as e:
+            raise click.ClickException(e.msg)
+    except ValueError as e:
+        raise click.ClickException('%s: "%s".' % (e, infile))
+    except IOError as e:
+        raise click.ClickException('Invalid file: "%s".\n%s' % (infile, e))
     return True
