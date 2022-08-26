@@ -25,6 +25,13 @@ Convert a single CityJSON file to JSON-FG
 cityjson2jsonfg <input.city.json> <output.jsonfg>
 ```
 
+See the help menu and the tool version
+
+```shell
+cityjson2jsonfg --help
+cityjson2jsonfg --version
+```
+
 ## Limitations
 
 Version 1.0 was primarily developed to convert CityJSON files of the [3D BAG](https://3dbag.nl/en/viewer).

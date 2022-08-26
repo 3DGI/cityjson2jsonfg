@@ -13,9 +13,18 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 """
-from cjio import cityjson
+import click
 
 
-def hello():
+@click.command()
+@click.version_option()
+@click.argument("input", type=click.File("r"))
+@click.argument("output", type=click.File("w"))
+def main():
+    """A command line tool for converting CityJSON files to JSON-FG format.
+
+        INPUT – Path to a CityJSON file\n
+        OUTPUT – Path to the JSON-FG file to write
+    """
     print("Hello world")
     return True
