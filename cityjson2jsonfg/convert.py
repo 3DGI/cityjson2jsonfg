@@ -1,6 +1,9 @@
-from cjio import cityjson
+from io import StringIO
+import json
 
 
-class CityJSON(cityjson.CityJSON):
-    def export2jsonfg(self):
-        pass
+def to_jsonfg(cm):
+    out = StringIO()
+    jfg = {}
+    out.write(json.dumps(jfg, separators=(',', ':')))
+    return out

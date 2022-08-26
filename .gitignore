@@ -2,4 +2,4 @@
 .run
 .tox
 *.egg-info
-!tests/data/tmp/*.md
+tests/data/tmp/*.json

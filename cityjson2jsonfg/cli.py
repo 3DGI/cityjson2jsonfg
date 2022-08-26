@@ -15,10 +15,14 @@ limitations under the License.
 """
 import warnings
 import click
-from cjio import cityjson, errors
+from cjio import errors
 from cjio.cjio import _print_cmd
+from cjio import cityjson
 
 cityjson.CITYJSON_VERSIONS_SUPPORTED = ['1.1',]
+
+from cityjson2jsonfg import convert
+
 
 
 
@@ -34,6 +38,7 @@ def main(infile, outfile, ignore_duplicate_keys):
         OUTFILE – Path to the JSON-FG file to write
     """
     click.echo("Parsing %s" % infile.name)
+
     try:
         cm = cityjson.reader(file=infile, ignore_duplicate_keys=ignore_duplicate_keys)
         try:
@@ -46,4 +51,8 @@ def main(infile, outfile, ignore_duplicate_keys):
         raise click.ClickException('%s: "%s".' % (e, infile))
     except IOError as e:
         raise click.ClickException('Invalid file: "%s".\n%s' % (infile, e))
+
+    click.echo("Writing to %s" % outfile.name)
+    outfile.write(convert.to_jsonfg(cm).getvalue())
+
     return True
