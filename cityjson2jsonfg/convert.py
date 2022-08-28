@@ -1,5 +1,6 @@
 from io import StringIO
 import json
+from copy import deepcopy
 
 
 def to_jsonfg(cm):
@@ -17,7 +18,7 @@ def to_jsonfg(cm):
         "title": "JSON Schema of GeoJSON Feature"
     }
 
-    jfg = {
+    collection = {
         "type": "FeatureCollection",
         "features": [],
         "coordRefSys": None,  # CityJSON:metadata:referenceSystem
@@ -31,7 +32,7 @@ def to_jsonfg(cm):
         ]
     }
 
-    feature = {
+    feature_template = {
         "id": None,  # CityObject ID
         "type": "Feature",
         "featureType": None,  # CityObject:type mapped to
@@ -49,6 +50,19 @@ def to_jsonfg(cm):
         ]
     }
 
+    # Convert CitJSON --> FeatureCollection
+    collection["coordRefSys"] = cm.j.get("metadata", {}).get("referenceSystem", None)
+
+    # Convert CityObject --> Feature
+    feature_time = cm.j.get("metadata", {}).get("referenceDate", None)
+    for coid, co in cm.j["CityObjects"].items():
+        feature = deepcopy(feature_template)
+        feature["id"] = coid
+        feature["featureType"] = co["type"]
+        feature["time"] = feature_time if feature_time is not None else None
+        feature["properties"] = co.get("attributes", None)
+        collection["features"].append(feature)
+
     out = StringIO()
-    out.write(json.dumps(jfg, separators=(',', ':')))
+    out.write(json.dumps(collection, separators=(',', ':')))
     return out

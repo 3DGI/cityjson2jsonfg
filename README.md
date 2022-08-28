@@ -42,6 +42,17 @@ cityjson2jsonfg --version
 Version 1.0 was primarily developed to convert CityJSON files of the [3D BAG](https://3dbag.nl/en/viewer).
 Conversion from other data sets might not work.
 
+### Information loss in the CityJSON --> JSON-FG conversion
+
+Not all the information contained in a CityJSON document can be represented by JSON-FG.
+Therefore, some information can be lost in the conversion.
+
+- multiple LoD
+- what is json-fg:time? currently it is cityjson:metadata:referenceDate
+- semantic surfaces
+- appearances
+- metadata
+
 ## Communication
 
 All work takes place in the current GitHub repository.

@@ -15,9 +15,7 @@ limitations under the License.
 """
 import warnings
 import click
-from cjio import errors
-from cjio.cjio import _print_cmd
-from cjio import cityjson
+from cjio import errors, cityjson, cjio
 
 cityjson.CITYJSON_VERSIONS_SUPPORTED = ['1.1',]
 
@@ -44,7 +42,7 @@ def main(infile, outfile, ignore_duplicate_keys):
         try:
             with warnings.catch_warnings(record=True) as w:
                 cm.check_version()
-                _print_cmd(w)
+                cjio._print_cmd(w)
         except errors.CJInvalidVersion as e:
             raise click.ClickException(e.msg)
     except ValueError as e:

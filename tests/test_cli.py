@@ -11,11 +11,11 @@ def test_help():
     assert result.exit_code == 0
 
 
-def test_read(input_model_5910_path, tmp_dir):
+def test_read(input_model_5907_path, tmp_dir):
     runner = CliRunner()
     result = runner.invoke(cli.main,
-                           args=[str(input_model_5910_path),
-                                 str(tmp_dir)])
+                           args=[str(input_model_5907_path),
+                                 str(tmp_dir / "out.json")])
     if result.exit_code != 0:
         pytest.fail(result.stdout)
     else:

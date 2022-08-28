@@ -14,12 +14,12 @@ def tmp_dir(data_dir):
 
 
 @pytest.fixture(scope="function")
-def input_model_5910_path(data_dir):
-    """3D BAG tile 5910 subset"""
-    yield data_dir / "3dbag_v210908_fd2cee53_5910_subset.json"
+def input_model_5907_path(data_dir):
+    """3D BAG tile 5907 subset"""
+    yield data_dir / "3dbag_v210908_fd2cee53_5907_subset.json"
 
 @pytest.fixture(scope="function")
-def input_model_5910(data_dir):
-    """3D BAG tile 5910 subset"""
-    with (data_dir / "3dbag_v210908_fd2cee53_5910_subset.json").open("r") as fo:
+def input_model_5907(data_dir):
+    """3D BAG tile 5907 subset"""
+    with (data_dir / "3dbag_v210908_fd2cee53_5907_subset.json").open("r") as fo:
         return reader(file=fo)
