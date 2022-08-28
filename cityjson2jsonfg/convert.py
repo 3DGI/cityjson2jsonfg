@@ -55,12 +55,32 @@ def to_jsonfg(cm):
 
     # Convert CityObject --> Feature
     feature_time = cm.j.get("metadata", {}).get("referenceDate", None)
-    for coid, co in cm.j["CityObjects"].items():
+    for coid, co in cm.cityobjects.items():
         feature = deepcopy(feature_template)
         feature["id"] = coid
-        feature["featureType"] = co["type"]
-        feature["time"] = feature_time if feature_time is not None else None
-        feature["properties"] = co.get("attributes", None)
+        feature["featureType"] = co.type
+        feature["time"] = {"date": feature_time} if feature_time is not None else None
+        feature["properties"] = co.attributes
+        # TODO: generalize this for other cityobject types
+        if len(co.geometry) > 0 and (co.type == "Building" or co.type == "BuildingPart"):
+            for geom in co.geometry:
+                if geom.lod < "1":
+                    # TODO: for the "geometry" member we need WGS84
+                    feature["geometry"] = {"coordinates": geom.boundaries}
+                    if geom.type == "MultiSurface":
+                        feature["geometry"]["type"] = "MultiPolygon"
+                    elif geom.type == "MultiPoint":
+                        feature["geometry"]["type"] = "MultiPoint"
+                    elif geom.type == "MultiLineString":
+                        feature["geometry"]["type"] = "MultiLineString"
+                # We only convert LoD2 (or higher) Building geometries to "place"
+                elif geom.lod > "1":
+                    feature["place"] = {"coordinates": geom.boundaries}
+                    if geom.type == "Solid":
+                        feature["place"]["type"] = "Polyhedron"
+                    elif geom.type == "MultiSurface":
+                        # TODO: need to verify if MultiSurface == GeoJSON MultiPolygon
+                        feature["place"]["type"] = "MultiPolygon"
         collection["features"].append(feature)
 
     out = StringIO()

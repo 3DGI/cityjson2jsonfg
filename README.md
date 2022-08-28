@@ -52,6 +52,8 @@ Therefore, some information can be lost in the conversion.
 - semantic surfaces
 - appearances
 - metadata
+- what about `null` geometries
+- object hierarchy?
 
 ## Communication
 

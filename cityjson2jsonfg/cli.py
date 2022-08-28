@@ -17,17 +17,15 @@ import warnings
 import click
 from cjio import errors, cityjson, cjio
 
-cityjson.CITYJSON_VERSIONS_SUPPORTED = ['1.1',]
-
 from cityjson2jsonfg import convert
 
-
+cityjson.CITYJSON_VERSIONS_SUPPORTED = ['1.1',]
 
 
 @click.command()
 @click.version_option()
 @click.argument("infile", type=click.File("r"))
-@click.argument("outfile", type=click.File("w"))
+@click.argument("outfile", type=click.File("w", lazy=True))
 @click.option('--ignore_duplicate_keys', is_flag=True, help='Load a CityJSON file even if some City Objects have the same IDs (technically invalid file).')
 def main(infile, outfile, ignore_duplicate_keys):
     """A command line tool for converting CityJSON files to JSON-FG format.
@@ -45,6 +43,9 @@ def main(infile, outfile, ignore_duplicate_keys):
                 cjio._print_cmd(w)
         except errors.CJInvalidVersion as e:
             raise click.ClickException(e.msg)
+        # Dereference the CityJSON geometry boundaries so that they store the
+        # coordinates instead of vertex indices
+        cm.load_from_j()
     except ValueError as e:
         raise click.ClickException('%s: "%s".' % (e, infile))
     except IOError as e:

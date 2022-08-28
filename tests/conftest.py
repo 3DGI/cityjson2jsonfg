@@ -22,4 +22,7 @@ def input_model_5907_path(data_dir):
 def input_model_5907(data_dir):
     """3D BAG tile 5907 subset"""
     with (data_dir / "3dbag_v210908_fd2cee53_5907_subset.json").open("r") as fo:
-        return reader(file=fo)
+        cm = reader(file=fo)
+        cm.load_from_j()
+        yield cm
+
