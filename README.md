@@ -7,6 +7,11 @@ JSON-FG extends GeoJSON to support a wider range of use cases.
 For *cityjson2jsonfg* the most important capability of JSON-FG is 3D data storage, since [CityJSON](https://www.cityjson.org/) is a 3D spatial data format.
 CityJSON is a JSON-based encoding for storing 3D city models, also called digital maquettes or digital twins.
 
+Supported versions:
+
+- CityJSON: 1.1
+- JSON-FG: 0.1
+
 ## Installation
 
 Required python: >= 3.8
@@ -20,7 +25,6 @@ pip install cityjson2jsonfg
 ## Usage
 
 Convert a single CityJSON file to JSON-FG.
-Only CityJSON v1.1 (or higher) files are supported.
 
 ```shell
 cityjson2jsonfg <input.city.json> <output.jsonfg>
