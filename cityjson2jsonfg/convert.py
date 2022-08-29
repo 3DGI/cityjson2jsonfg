@@ -53,6 +53,7 @@ def to_jsonfg(cm):
     }
 
     # Convert CityObject --> Feature
+    geomdim = set()
     feature_time = cm.j.get("metadata", {}).get("referenceDate", None)
     for coid, co in cm.cityobjects.items():
         feature = deepcopy(feature_template)
@@ -69,13 +70,17 @@ def to_jsonfg(cm):
                     feature["geometry"] = {"coordinates": boundaries_crs84}
                     if geom.type == "MultiSurface":
                         feature["geometry"]["type"] = "MultiPolygon"
+                        geomdim.add(2)
                     elif geom.type == "MultiPoint":
                         feature["geometry"]["type"] = "MultiPoint"
+                        geomdim.add(0)
                     elif geom.type == "MultiLineString":
                         feature["geometry"]["type"] = "MultiLineString"
+                        geomdim.add(1)
                 # We only convert LoD2 (or higher) Building geometries to "place"
                 elif geom.lod > "1":
                     feature["place"] = {"coordinates": geom.boundaries}
+                    geomdim.add(3)
                     if geom.type == "Solid":
                         feature["place"]["type"] = "Polyhedron"
                     elif geom.type == "MultiSurface":
@@ -84,6 +89,7 @@ def to_jsonfg(cm):
 
     # Convert CitJSON --> FeatureCollection
     collection["coordRefSys"] = cm.j.get("metadata", {}).get("referenceSystem", None)
+    collection["geometryDimension"] = geomdim.pop() if len(geomdim) == 1 else None
 
     out = StringIO()
     out.write(json.dumps(collection, separators=(',', ':')))
