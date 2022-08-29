@@ -25,7 +25,7 @@ dependencies = [
     "pyproj>=3.1"
 ]
 optional-dependencies = { develop = ["pytest", "tox"] }
-scripts = { cityjson2jsonfg = "cityjson2jsonfg.cli:main_cmd", cjtest="cityjson2jsonfg.cli:_test_cmd" }
+scripts = { cityjson2jsonfg = "cityjson2jsonfg.cli:main_cmd" }
 
 [tool.pytest.ini_options]
 log_cli = true

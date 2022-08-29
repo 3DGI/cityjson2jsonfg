@@ -55,7 +55,6 @@ def main(infile, outfile, ignore_duplicate_keys):
     collection = convert.to_jsonfg_collection(cm)
     click.echo("Writing to %s" % outfile.name)
     outfile.write(convert.to_jsonfg_str(collection).getvalue())
-    return True
 
 
 @click.command(name="main")
@@ -70,15 +69,3 @@ def main_cmd(infile, outfile, ignore_duplicate_keys):
         OUTFILE – Path to the JSON-FG file to write
     """
     main(infile, outfile, ignore_duplicate_keys)
-
-@click.command()
-@click.version_option()
-@click.argument("infile", type=click.File("r"), default=sys.stdin)
-@click.argument("outfile", type=click.File("w", lazy=True))
-def _test_cmd(infile, outfile):
-    """Just for testing"""
-    if infile.name == "<stdin>":
-        cm = cityjson.read_stdin()
-    else:
-        cm = cityjson.reader(file=infile, ignore_duplicate_keys=True)
-    click.echo(len(cm.j["CityObjects"]))
