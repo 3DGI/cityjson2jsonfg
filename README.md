@@ -2,8 +2,8 @@
 
 *A command line tool for converting CityJSON files to JSON-FG format.*
 
-*JSON-FG* stands for [*OGC Features and Geometries JSON*](https://github.com/opengeospatial/ogc-feat-geo-json), which is (currently) a candidate standard. 
-JSON-FG extends GeoJSON to support a wider range of use cases. 
+*JSON-FG* stands for [*OGC Features and Geometries JSON*](https://github.com/opengeospatial/ogc-feat-geo-json), which is (currently) a candidate standard.
+JSON-FG extends GeoJSON to support a wider range of use cases.
 For *cityjson2jsonfg* the most important capability of JSON-FG is 3D data storage, since [CityJSON](https://www.cityjson.org/) is a 3D spatial data format.
 CityJSON is a JSON-based encoding for storing 3D city models, also called digital maquettes or digital twins.
 
@@ -57,6 +57,14 @@ Conversion from other data sets might not work.
 
 Not all the information contained in a CityJSON document can be represented by JSON-FG.
 Therefore, some information can be lost in the conversion.
+Below is a mapping of CityJSON concepts that cannot be directly converted to JSON-FG.
+
+| CityJSON                                                                  | JSON-FG                                                                                                                                                                                                                                                         |
+|---------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Multiple LoDs in one CityObject.<br/> Different main levels eg. (0, 1.3, 2.2). | If the CityObject has a geometry with LoD < 1, this geometry is assumed to be 2.5D and added as GeoJSON geometry to `"geometry"`. If the rest of the geometries are LoD >= 1, then the geometry with the highest LoD is added as JSON-FG geometry to `"place"`. |
+|                                                                           |                                                                                                                                                                                                                                                                 |
+|                                                                           |                                                                                                                                                                                                                                                                 |
+|                                                                           |                                                                                                                                                                                                                                                                 |
 
 - multiple LoD
 - what is json-fg:time? currently it is cityjson:metadata:referenceDate

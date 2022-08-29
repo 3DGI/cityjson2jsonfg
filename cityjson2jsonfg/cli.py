@@ -51,8 +51,10 @@ def main(infile, outfile, ignore_duplicate_keys):
     cm.j["CityObjects"] = {}
     gc.collect()
 
+    click.echo("Converting to JSON-FG")
+    collection = convert.to_jsonfg_collection(cm)
     click.echo("Writing to %s" % outfile.name)
-    outfile.write(convert.to_jsonfg(cm).getvalue())
+    outfile.write(convert.to_jsonfg_str(collection).getvalue())
     return True
 
 

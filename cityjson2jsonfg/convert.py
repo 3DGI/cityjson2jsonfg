@@ -5,7 +5,13 @@ from copy import deepcopy
 from pyproj import CRS
 
 
-def to_jsonfg(cm):
+def to_jsonfg_str(collection):
+    out = StringIO()
+    out.write(json.dumps(collection, separators=(',', ':')))
+    return out
+
+
+def to_jsonfg_collection(cm):
 
     link_geojson_collection = {
         "href": "https://geojson.org/schema/FeatureCollection.json",
@@ -62,35 +68,50 @@ def to_jsonfg(cm):
         feature["time"] = {"date": feature_time} if feature_time is not None else None
         feature["properties"] = co.attributes
         # TODO: generalize this for other cityobject types
-        if len(co.geometry) > 0 and (co.type == "Building" or co.type == "BuildingPart"):
-            for geom in co.geometry:
-                if geom.lod < "1":
-                    crs_to = CRS("OGC:CRS84")
-                    boundaries_crs84 = geom.reproject(cm.get_epsg(), crs_to=crs_to)
-                    feature["geometry"] = {"coordinates": boundaries_crs84}
-                    if geom.type == "MultiSurface":
-                        feature["geometry"]["type"] = "MultiPolygon"
-                        geomdim.add(2)
-                    elif geom.type == "MultiPoint":
-                        feature["geometry"]["type"] = "MultiPoint"
-                        geomdim.add(0)
-                    elif geom.type == "MultiLineString":
-                        feature["geometry"]["type"] = "MultiLineString"
-                        geomdim.add(1)
-                # We only convert LoD2 (or higher) Building geometries to "place"
-                elif geom.lod > "1":
-                    feature["place"] = {"coordinates": geom.boundaries}
-                    geomdim.add(3)
-                    if geom.type == "Solid":
-                        feature["place"]["type"] = "Polyhedron"
-                    elif geom.type == "MultiSurface":
-                        feature["place"]["type"] = "MultiPolygon"
+        convert_boundaries(cm, co, feature, geomdim)
         collection["features"].append(feature)
 
     # Convert CitJSON --> FeatureCollection
     collection["coordRefSys"] = cm.j.get("metadata", {}).get("referenceSystem", None)
     collection["geometryDimension"] = geomdim.pop() if len(geomdim) == 1 else None
 
-    out = StringIO()
-    out.write(json.dumps(collection, separators=(',', ':')))
-    return out
+    return collection
+
+
+def convert_boundaries(cm, co, feature, geomdim):
+    """Convert a CityObject's Geometry to the feature geometry/place.
+
+    Updates the `feature` and populates the `"geometry"` and/or `"place"` members as
+    appropriate.
+
+    :param cm: An instance of :class:`cjio.cityjson.CityJSON`.
+    :param co: An instance of :class:`cjio.models.CityObject`.
+    :param feature: A JSON-FG feature to update.
+    :type feature: dict
+    :param geomdim: An empty set to be updated. Stores the geometry dimensions of
+        the citymodel.
+    :type geomdim: set
+    """
+    if len(co.geometry) > 0 and (co.type == "Building" or co.type == "BuildingPart"):
+        for geom in co.geometry:
+            if geom.lod < "1":
+                crs_to = CRS("OGC:CRS84")
+                boundaries_crs84 = geom.reproject(cm.get_epsg(), crs_to=crs_to)
+                feature["geometry"] = {"coordinates": boundaries_crs84}
+                if geom.type == "MultiSurface":
+                    feature["geometry"]["type"] = "MultiPolygon"
+                    geomdim.add(2)
+                elif geom.type == "MultiPoint":
+                    feature["geometry"]["type"] = "MultiPoint"
+                    geomdim.add(0)
+                elif geom.type == "MultiLineString":
+                    feature["geometry"]["type"] = "MultiLineString"
+                    geomdim.add(1)
+            # We only convert LoD2 (or higher) Building geometries to "place"
+            elif geom.lod > "1":
+                feature["place"] = {"coordinates": geom.boundaries}
+                geomdim.add(3)
+                if geom.type == "Solid":
+                    feature["place"]["type"] = "Polyhedron"
+                elif geom.type == "MultiSurface":
+                    feature["place"]["type"] = "MultiPolygon"
