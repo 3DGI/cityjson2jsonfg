@@ -53,26 +53,21 @@ cjio --suppress_msg <input.city.json> upgrade save stdout | cityjson2jsonfg - <o
 Version 1.0 was primarily developed to convert CityJSON files of the [3D BAG](https://3dbag.nl/en/viewer).
 Conversion from other data sets might not work.
 
-### Information loss in the CityJSON --> JSON-FG conversion
+## CityJSON --> JSON-FG conversion table
 
 Not all the information contained in a CityJSON document can be represented by JSON-FG.
 Therefore, some information can be lost in the conversion.
-Below is a mapping of CityJSON concepts that cannot be directly converted to JSON-FG.
+Below is a mapping of the CityJSON concepts to JSON-FG as it is implemented in *cityjson2jsonfg*.
 
-| CityJSON                                                                  | JSON-FG                                                                                                                                                                                                                                                         |
-|---------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| Multiple LoDs in one CityObject.<br/> Different main levels eg. (0, 1.3, 2.2). | If the CityObject has a geometry with LoD < 1, this geometry is assumed to be 2.5D and added as GeoJSON geometry to `"geometry"`. If the rest of the geometries are LoD >= 1, then the geometry with the highest LoD is added as JSON-FG geometry to `"place"`. |
-|                                                                           |                                                                                                                                                                                                                                                                 |
-|                                                                           |                                                                                                                                                                                                                                                                 |
-|                                                                           |                                                                                                                                                                                                                                                                 |
-
-- multiple LoD
-- what is json-fg:time? currently it is cityjson:metadata:referenceDate
-- semantic surfaces
-- appearances
-- metadata
-- what about `null` geometries
-- object hierarchy?
+| CityJSON                                                                         | JSON-FG                                                                                                                                                                                                                                                         |
+|----------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Multiple LoDs in one CityObject, each from a different family eg. (0, 1.3, 2.2). | If the CityObject has a geometry with LoD < 1, this geometry is assumed to be 2.5D and added as GeoJSON geometry to `"geometry"`. If the rest of the geometries are LoD >= 1, then the geometry with the highest LoD is added as JSON-FG geometry to `"place"`. |
+| Multiple LoDs in one CityObject, each from the same family eg. (1.1, 1.3).       | The geometry with the highest LoD is added to the feature.                                                                                                                                                                                                      |
+| City model creation date in `CityJSON.metadata.referenceDate`.                   | Assigned as an instant time to `time.date` as `full-date`.                                                                                                                                                                                                      |
+| Semantic surfaces                                                                | Not converted.                                                                                                                                                                                                                                                  |
+| Appearances                                                                      | Not converted.                                                                                                                                                                                                                                                  |
+| Metadata (other than `referenceDate` and `referenceSystem`)                      | Not converted.                                                                                                                                                                                                                                                  |
+| CityObject hierarchy (parent and children relations)                             | Not converted.                                                                                                                                                                                                                                                  |
 
 ## Communication
 

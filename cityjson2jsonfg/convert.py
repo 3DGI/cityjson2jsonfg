@@ -92,6 +92,7 @@ def convert_boundaries(cm, co, feature, geomdim):
         the citymodel.
     :type geomdim: set
     """
+    max_lod = max(g.lod for g in co.geometry)
     if len(co.geometry) > 0 and (co.type == "Building" or co.type == "BuildingPart"):
         for geom in co.geometry:
             if geom.lod < "1":
@@ -107,8 +108,8 @@ def convert_boundaries(cm, co, feature, geomdim):
                 elif geom.type == "MultiLineString":
                     feature["geometry"]["type"] = "MultiLineString"
                     geomdim.add(1)
-            # We only convert LoD2 (or higher) Building geometries to "place"
-            elif geom.lod > "1":
+            # We only convert the highest LoD to "place"
+            elif geom.lod == max_lod:
                 feature["place"] = {"coordinates": geom.boundaries}
                 geomdim.add(3)
                 if geom.type == "Solid":
