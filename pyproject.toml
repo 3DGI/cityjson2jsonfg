@@ -21,7 +21,8 @@ classifiers = [
 urls = { github = "https://github.com/3DGI/cityjson2jsonfg" }
 dependencies = [
     "cjio @ git+https://github.com/cityjson/cjio.git@develop",
-    "click>=8.1"
+    "click>=8.1",
+    "pyproj>=3.1"
 ]
 optional-dependencies = { develop = ["pytest", "tox"] }
 scripts = { cityjson2jsonfg = "cityjson2jsonfg.cli:main" }

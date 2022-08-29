@@ -46,6 +46,8 @@ def main(infile, outfile, ignore_duplicate_keys):
         # Dereference the CityJSON geometry boundaries so that they store the
         # coordinates instead of vertex indices
         cm.load_from_j()
+        # TODO: Remove duplicate data from the citymodel (need to be fixed in cjio)
+        cm.j["CityObjects"] = {}
     except ValueError as e:
         raise click.ClickException('%s: "%s".' % (e, infile))
     except IOError as e:

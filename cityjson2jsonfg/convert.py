@@ -2,6 +2,8 @@ from io import StringIO
 import json
 from copy import deepcopy
 
+from pyproj import CRS
+
 
 def to_jsonfg(cm):
 
@@ -50,9 +52,6 @@ def to_jsonfg(cm):
         ]
     }
 
-    # Convert CitJSON --> FeatureCollection
-    collection["coordRefSys"] = cm.j.get("metadata", {}).get("referenceSystem", None)
-
     # Convert CityObject --> Feature
     feature_time = cm.j.get("metadata", {}).get("referenceDate", None)
     for coid, co in cm.cityobjects.items():
@@ -65,8 +64,9 @@ def to_jsonfg(cm):
         if len(co.geometry) > 0 and (co.type == "Building" or co.type == "BuildingPart"):
             for geom in co.geometry:
                 if geom.lod < "1":
-                    # TODO: for the "geometry" member we need WGS84
-                    feature["geometry"] = {"coordinates": geom.boundaries}
+                    crs_to = CRS("OGC:CRS84")
+                    boundaries_crs84 = geom.reproject(cm.get_epsg(), crs_to=crs_to)
+                    feature["geometry"] = {"coordinates": boundaries_crs84}
                     if geom.type == "MultiSurface":
                         feature["geometry"]["type"] = "MultiPolygon"
                     elif geom.type == "MultiPoint":
@@ -79,9 +79,11 @@ def to_jsonfg(cm):
                     if geom.type == "Solid":
                         feature["place"]["type"] = "Polyhedron"
                     elif geom.type == "MultiSurface":
-                        # TODO: need to verify if MultiSurface == GeoJSON MultiPolygon
                         feature["place"]["type"] = "MultiPolygon"
         collection["features"].append(feature)
+
+    # Convert CitJSON --> FeatureCollection
+    collection["coordRefSys"] = cm.j.get("metadata", {}).get("referenceSystem", None)
 
     out = StringIO()
     out.write(json.dumps(collection, separators=(',', ':')))
