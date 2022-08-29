@@ -13,7 +13,10 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 """
+import sys
 import warnings
+import gc
+
 import click
 from cjio import errors, cityjson, cjio
 
@@ -22,38 +25,58 @@ from cityjson2jsonfg import convert
 cityjson.CITYJSON_VERSIONS_SUPPORTED = ['1.1',]
 
 
-@click.command()
+def main(infile, outfile, ignore_duplicate_keys):
+    click.echo("Parsing %s" % infile.name)
+    if infile.name == "<stdin>":
+        cm = cityjson.read_stdin()
+    else:
+        try:
+            cm = cityjson.reader(file=infile, ignore_duplicate_keys=ignore_duplicate_keys)
+        except ValueError as e:
+            raise click.ClickException('%s: "%s".' % (e, infile))
+        except IOError as e:
+            raise click.ClickException('Invalid file: "%s".\n%s' % (infile, e))
+
+    try:
+        with warnings.catch_warnings(record=True) as w:
+            cm.check_version()
+            cjio._print_cmd(w)
+    except errors.CJInvalidVersion as e:
+        raise click.ClickException(e.msg)
+
+    # Dereference the CityJSON geometry boundaries so that they store the
+    # coordinates instead of vertex indices
+    cm.load_from_j()
+    # TODO: Remove duplicate data from the citymodel (need to be fixed in cjio)
+    cm.j["CityObjects"] = {}
+    gc.collect()
+
+    click.echo("Writing to %s" % outfile.name)
+    outfile.write(convert.to_jsonfg(cm).getvalue())
+    return True
+
+
+@click.command(name="main")
 @click.version_option()
-@click.argument("infile", type=click.File("r"))
+@click.argument("infile", type=click.File("r"), default=sys.stdin)
 @click.argument("outfile", type=click.File("w", lazy=True))
 @click.option('--ignore_duplicate_keys', is_flag=True, help='Load a CityJSON file even if some City Objects have the same IDs (technically invalid file).')
-def main(infile, outfile, ignore_duplicate_keys):
+def main_cmd(infile, outfile, ignore_duplicate_keys):
     """A command line tool for converting CityJSON files to JSON-FG format.
 
         INFILE – Path to a CityJSON file\n
         OUTFILE – Path to the JSON-FG file to write
     """
-    click.echo("Parsing %s" % infile.name)
+    main(infile, outfile, ignore_duplicate_keys)
 
-    try:
-        cm = cityjson.reader(file=infile, ignore_duplicate_keys=ignore_duplicate_keys)
-        try:
-            with warnings.catch_warnings(record=True) as w:
-                cm.check_version()
-                cjio._print_cmd(w)
-        except errors.CJInvalidVersion as e:
-            raise click.ClickException(e.msg)
-        # Dereference the CityJSON geometry boundaries so that they store the
-        # coordinates instead of vertex indices
-        cm.load_from_j()
-        # TODO: Remove duplicate data from the citymodel (need to be fixed in cjio)
-        cm.j["CityObjects"] = {}
-    except ValueError as e:
-        raise click.ClickException('%s: "%s".' % (e, infile))
-    except IOError as e:
-        raise click.ClickException('Invalid file: "%s".\n%s' % (infile, e))
-
-    click.echo("Writing to %s" % outfile.name)
-    outfile.write(convert.to_jsonfg(cm).getvalue())
-
-    return True
+@click.command()
+@click.version_option()
+@click.argument("infile", type=click.File("r"), default=sys.stdin)
+@click.argument("outfile", type=click.File("w", lazy=True))
+def _test_cmd(infile, outfile):
+    """Just for testing"""
+    if infile.name == "<stdin>":
+        cm = cityjson.read_stdin()
+    else:
+        cm = cityjson.reader(file=infile, ignore_duplicate_keys=True)
+    click.echo(len(cm.j["CityObjects"]))

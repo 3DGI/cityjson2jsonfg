@@ -37,6 +37,17 @@ cityjson2jsonfg --help
 cityjson2jsonfg --version
 ```
 
+### Pipe from cjio
+
+[cjio]() is a CLI tool for manipulating 3D city models that are stored in CityJSON files.
+You can pipe cjio's output directly into *cityjson2jsonfg* without saving an intermedate file.
+This is particularly useful if you want to modify the citymodel before the conversion.
+For instance, upgrade the CityJSON file to v1.1 and then convert it to JSON-FG.
+
+```shell
+cjio --suppress_msg <input.city.json> upgrade save stdout | cityjson2jsonfg - <output.jsonfg>
+```
+
 ## Limitations
 
 Version 1.0 was primarily developed to convert CityJSON files of the [3D BAG](https://3dbag.nl/en/viewer).
