@@ -19,7 +19,7 @@ classifiers = [
 ]
 urls = { github = "https://github.com/3DGI/cityjson2jsonfg" }
 dependencies = [
-    "cjio>=0.7.5,
+    "cjio>=0.7.5",
     "click>=8.1",
     "pyproj>=3.1"
 ]

@@ -16,6 +16,8 @@ Supported versions:
 
 Required python: >= 3.8
 
+Additionally, you need a relatively new version of `pip` and `setuptools` that supports building from `pyproject.toml` files.
+
 You can install *cityjson2jsonfg* with pip.
 
 ```shell
