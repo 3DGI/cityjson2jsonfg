@@ -53,6 +53,11 @@ cjio --suppress_msg <input.city.json> upgrade save stdout | cityjson2jsonfg - <o
 Version 1.0 was primarily developed to convert CityJSON files of the Dutch [3D BAG](https://3dbag.nl/en/viewer) and [3D Basisvoorziening](https://www.pdok.nl/introductie/-/article/3d-basisvoorziening-1) data sets.
 Conversion from other data sets might not work.
 
+## Converted data
+
+A subset of the 3D BAG and 3D Basisvoorziening is available at [https://data.3dgi.xyz/jsonfg](https://data.3dgi.xyz/jsonfg).
+Both the source and converted files are provided.
+
 ## CityJSON --> JSON-FG conversion table
 
 Not all the information contained in a CityJSON document can be represented by JSON-FG.
