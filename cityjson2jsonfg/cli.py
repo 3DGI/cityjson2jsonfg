@@ -1,5 +1,5 @@
 """Command Line Interface (cli.py)
-Copyright 2022 Balázs Dukai
+Copyright 2022 3DGI <info@3dgi.nl>
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.

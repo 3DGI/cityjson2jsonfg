@@ -10,7 +10,6 @@ readme = "README.md"
 requires-python = ">=3.8"
 license = { text = "Apache-2.0 License" }
 authors = [
-    { name = "Balázs Dukai", email = "balazs.dukai@3dgi.nl" },
     { name = "3DGI", email = "info@3dgi.nl" }
 ]
 classifiers = [
