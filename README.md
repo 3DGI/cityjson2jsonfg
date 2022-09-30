@@ -29,7 +29,7 @@ pip install cityjson2jsonfg
 Convert a single CityJSON file to JSON-FG.
 
 ```shell
-cityjson2jsonfg <input.city.json> <output.jsonfg>
+cityjson2jsonfg <input.city.json> <output.fg.json>
 ```
 
 See the help menu and the tool version
@@ -47,7 +47,7 @@ This is particularly useful if you want to modify the citymodel before the conve
 For instance, upgrade the CityJSON file to v1.1 and then convert it to JSON-FG.
 
 ```shell
-cjio --suppress_msg <input.city.json> upgrade save stdout | cityjson2jsonfg - <output.jsonfg>
+cjio --suppress_msg <input.city.json> upgrade save stdout | cityjson2jsonfg - <output.fg.json>
 ```
 
 ## Limitations
