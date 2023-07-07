@@ -18,7 +18,9 @@ from io import StringIO
 import json
 from copy import deepcopy
 
+import cjio.models
 from pyproj import CRS
+from click import echo
 
 
 def to_jsonfg_str(collection):
@@ -119,7 +121,9 @@ def convert_boundaries(cm, co, feature, geomdim):
         if geom.lod < "0.2":
             crs_to = CRS("OGC:CRS84")
             boundaries_crs84 = geom.reproject(cm.get_epsg(), crs_to=crs_to)
-            feature["geometry"] = {"coordinates": boundaries_crs84}
+            geom.boundaries = boundaries_crs84
+            coordinates = geometry_to_coordinates(geom)
+            feature["geometry"] = {"coordinates": coordinates}
             if geom.type == "MultiSurface":
                 feature["geometry"]["type"] = "MultiPolygon"
                 geomdim.add(2)
@@ -129,11 +133,33 @@ def convert_boundaries(cm, co, feature, geomdim):
             elif geom.type == "MultiLineString":
                 feature["geometry"]["type"] = "MultiLineString"
                 geomdim.add(1)
+            else:
+                echo(
+                    f"Invalid CityJSON Geometry type {geom.type} for converting to JSON-FG 'geometry', skipping geometry.")
         # We only convert the highest LoD to "place"
         elif geom.lod == max_lod:
-            feature["place"] = {"coordinates": geom.boundaries}
+            coordinates = geometry_to_coordinates(geom)
+            feature["place"] = {"coordinates": coordinates}
             geomdim.add(3)
             if geom.type == "Solid":
                 feature["place"]["type"] = "Polyhedron"
             elif geom.type == "MultiSurface":
                 feature["place"]["type"] = "MultiPolygon"
+            else:
+                echo(f"CityJSON Geometry type {geom.type} is not supported for converting to JSON-FG 'place', skipping geometry.")
+
+
+def geometry_to_coordinates(geometry: cjio.models.Geometry) -> list:
+    """Convert a CityJSON Geometry to JSON-FG coordinates."""
+    if geometry.type == "Solid":
+        return [
+            [ [ring + [ring[0], ] for ring in surface] for surface in shell ]
+            for shell in geometry.boundaries
+        ]
+    elif geometry.type == "MultiSurface":
+        return [
+            [ring + [ring[0], ] for ring in surface]
+            for surface in geometry.boundaries
+        ]
+    elif geometry.type == "MultiPoint" or geometry.type == "MultiLineString":
+        return geometry.boundaries
