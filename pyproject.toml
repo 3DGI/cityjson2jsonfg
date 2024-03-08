@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "cityjson2jsonfg"
-version = "1.1"
+version = "1.2"
 description = "Convert CityJSON files to JSON-FG format"
 readme = "README.md"
 requires-python = ">=3.8"
@@ -19,7 +19,7 @@ classifiers = [
 ]
 urls = { github = "https://github.com/3DGI/cityjson2jsonfg" }
 dependencies = [
-    "cjio>=0.7.5",
+    "cjio==0.8.2",
     "click>=8.1",
     "pyproj>=3.1"
 ]

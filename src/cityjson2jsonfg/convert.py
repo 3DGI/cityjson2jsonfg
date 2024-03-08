@@ -31,31 +31,11 @@ def to_jsonfg_str(collection):
 
 def to_jsonfg_collection(cm):
 
-    link_geojson_collection = {
-        "href": "https://geojson.org/schema/FeatureCollection.json",
-        "rel": "describedby",
-        "type": "application/schema+json",
-        "title": "JSON Schema of GeoJSON FeatureCollection"
-    }
-    link_geojson_feature = {
-        "href": "https://geojson.org/schema/Feature.json",
-        "rel": "describedby",
-        "type": "application/schema+json",
-        "title": "JSON Schema of GeoJSON Feature"
-    }
-
     collection = {
         "type": "FeatureCollection",
+        "conformsTo": [ "[ogc-json-fg-1-0.2:core]", "[ogc-json-fg-1-0.2:3d]" ],
         "features": [],
         "coordRefSys": None,  # CityJSON:metadata:referenceSystem
-        "links": [
-            {
-                "href": "https://beta.schemas.opengis.net/json-fg/featurecollection.json",
-                "rel": "describedby",
-                "type": "application/schema+json",
-                "title": "JSON Schema of JSON-FG FeatureCollection"
-            },
-        ]
     }
 
     feature_template = {
@@ -66,19 +46,10 @@ def to_jsonfg_collection(cm):
         "properties": None,  # CityObject:attributes
         "geometry": None,  # CityObject:geometry if it has 2.5D representation
         "place": None,  # CityObject:geometry mapped
-        "links": [
-            {
-                "href": "https://beta.schemas.opengis.net/json-fg/feature.json",
-                "rel": "describedby",
-                "type": "application/schema+json",
-                "title": "JSON Schema of JSON-FG Feature"
-            },
-        ]
     }
 
     # Convert CityObject --> Feature
     geomdim = set()
-    geojson_added = False
     feature_time = cm.j.get("metadata", {}).get("referenceDate", None)
     for coid, co in cm.cityobjects.items():
         feature = deepcopy(feature_template)
@@ -87,17 +58,11 @@ def to_jsonfg_collection(cm):
         feature["time"] = {"date": feature_time} if feature_time is not None else None
         feature["properties"] = co.attributes
         convert_boundaries(cm, co, feature, geomdim)
-        if feature["geometry"] is not None:
-            # A GeoJSON geometry was added by convert_boundaries so we add the schema
-            feature["links"].append(link_geojson_feature)
-            geojson_added = True
         collection["features"].append(feature)
 
     # Convert CitJSON --> FeatureCollection
     collection["coordRefSys"] = cm.j.get("metadata", {}).get("referenceSystem", None)
     collection["geometryDimension"] = geomdim.pop() if len(geomdim) == 1 else None
-    if geojson_added:
-        collection["links"].append(link_geojson_collection)
 
     return collection
 

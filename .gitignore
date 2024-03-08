@@ -3,3 +3,4 @@
 .tox
 *.egg-info
 tests/data/tmp/*.json
+data
