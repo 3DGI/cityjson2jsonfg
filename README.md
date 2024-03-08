@@ -10,7 +10,7 @@ CityJSON is a JSON-based encoding for storing 3D city models, also called digita
 Supported versions:
 
 - CityJSON: 1.1
-- JSON-FG: 0.1
+- JSON-FG: 0.2.2
 
 ## Installation
 
