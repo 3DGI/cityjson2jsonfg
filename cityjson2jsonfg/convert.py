@@ -46,6 +46,7 @@ def to_jsonfg_collection(cm):
 
     collection = {
         "type": "FeatureCollection",
+        "conformsTo": [ "[ogc-json-fg-1-0.2:core]", "[ogc-json-fg-1-0.2:3d]" ],
         "features": [],
         "coordRefSys": None,  # CityJSON:metadata:referenceSystem
         "links": [
